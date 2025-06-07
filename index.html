@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Speech-to-Text Transcriber</title>
+    <style>
+        :root {
+            --color-bg: #e6f4ea;
+            --color-primary: #3a9451;
+            --color-primary-dark: #2f7a42;
+            --color-text: #2c3e22;
+            --color-text-muted: #566d4a;
+            --color-card-bg: rgba(255 255 255 / 0.8);
+            --border-radius: 12px;
+            --shadow: 0 8px 24px rgba(58,148,81,0.15);
+            --font-heading: 'Poppins', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter&family=Poppins:wght@600;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            flex-direction: column;
+            align-items: center;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: var(--color-card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 2rem 3rem 3rem 3rem;
+            backdrop-filter: saturate(180%) blur(12px);
+            -webkit-backdrop-filter: saturate(180%) blur(12px);
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--color-primary-dark);
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        input[type="file"] {
+            border: 2px solid var(--color-primary);
+            border-radius: 8px;
+            padding: 0.6rem 0.75rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            cursor: pointer;
+            background: white;
+        }
+
+        input[type="file"]:hover,
+        input[type="file"]:focus {
+            border-color: var(--color-primary-dark);
+            outline: none;
+        }
+
+        input[type="submit"] {
+            background: var(--color-primary);
+            border: none;
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+            padding: 0.9rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(58,148,81,0.4);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        input[type="submit"]:hover,
+        input[type="submit"]:focus {
+            background: var(--color-primary-dark);
+            transform: scale(1.05);
+            outline: none;
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            color: var(--color-primary-dark);
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+        pre {
+            background: #f0fcf3;
+            border: 1px solid #a7d7a9;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 1rem;
+            color: var(--color-text-muted);
+            margin-bottom: 1rem;
+            user-select: text;
+        }
+
+        a {
+            display: inline-block;
+            margin-bottom: 1.75rem;
+            color: var(--color-primary);
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 1.5px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        a:hover,
+        a:focus {
+            border-color: var(--color-primary-dark);
+            outline: none;
+        }
+
+        /* Dancing characters container */
+        .dancing-container {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 0 2px rgba(58,148,81,0.6));
+            user-select: none;
+        }
+
+        .dancer {
+            font-size: 2.5rem;
+            animation-name: dance;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+            animation-duration: 2.4s;
+            transform-origin: center bottom;
+            display: inline-block;
+            cursor: default;
+        }
+
+        /* Staggered animation delays for dance */
+        .dancer:nth-child(1) { animation-delay: 0s; }
+        .dancer:nth-child(2) { animation-delay: 0.3s; }
+        .dancer:nth-child(3) { animation-delay: 0.6s; }
+        .dancer:nth-child(4) { animation-delay: 0.9s; }
+        .dancer:nth-child(5) { animation-delay: 1.2s; }
+
+        @keyframes dance {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(-10deg); }
+            50% { transform: translateY(5px) rotate(15deg); }
+            75% { transform: translateY(-7px) rotate(-7deg); }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            .container {
+                padding: 1.5rem 2rem 2rem 2rem;
+            }
+            .dancer {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container" role="main" aria-label="Speech to text transcriber interface">
+        <section aria-label="Dancing characters">
+            <div class="dancing-container" aria-hidden="true" title="Dancing characters for decoration">
+                <span class="dancer" role="img" aria-label="Dancing character">💃</span>
+                <span class="dancer" role="img" aria-label="Dancing character">🕺</span>
+                <span class="dancer" role="img" aria-label="Dancing character">👯‍♀️</span>
+                <span class="dancer" role="img" aria-label="Dancing character">🎉</span>
+                <span class="dancer" role="img" aria-label="Dancing character">✨</span>
+            </div>
+        </section>
+        <h1>Upload an Audio File</h1>
+        <form method="post" enctype="multipart/form-data" aria-label="Upload audio file form">
+            <input type="file" name="audio" accept=".wav,.mp3" required aria-required="true" />
+            <input type="submit" value="Upload &amp; Process" />
+        </form>
+
+        {% if transcript %}
+            <h2>Transcript:</h2>
+            <pre>{{ transcript }}</pre>
+            <a href="/download/transcript.txt" download>Download Transcript</a>
+        {% endif %}
+
+        {% if summary %}
+            <h2>Summary:</h2>
+            <pre>{{ summary }}</pre>
+            <a href="/download/summary.txt" download>Download Summary</a>
+        {% endif %}
+    </main>
+</body>
+</html>
